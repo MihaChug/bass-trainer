@@ -1,7 +1,25 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import './App.css';
 
 const API_BASE_URL = '/api';
+
+// Типы ритмов для метронома
+const rhythmTypes = [
+  { id: 'quarter', name: 'Четвертные', pattern: '1 2 3 4', beatsPerBar: 4 },
+  { id: 'eighth', name: 'Восьмые', pattern: '1 & 2 & 3 & 4 &', beatsPerBar: 8 },
+  { id: 'sixteenth', name: 'Шестнадцатые', pattern: '1 e & a 2 e & a', beatsPerBar: 16 },
+  { id: 'triplet', name: 'Триоли', pattern: '1 trip let 2 trip let', beatsPerBar: 12 },
+  { id: 'syncopated', name: 'Синкопа', pattern: '1 & 2 & 3 & 4 &', beatsPerBar: 8 },
+  { id: 'funk', name: 'Фанк', pattern: '1 e & a 2 e & a', beatsPerBar: 16 },
+];
+
+// Типы звуков для метронома
+const soundTypes = [
+  { id: 'classic', name: 'Классический' },
+  { id: 'electronic', name: 'Электронный' },
+  { id: 'wood', name: 'Дерево' },
+  { id: 'highhat', name: 'Хай-хэт' },
+];
 
 // Данные упражнений по этапам с описаниями и типами звуков метронома
 const exercisesData = {
@@ -11,21 +29,24 @@ const exercisesData = {
       bpm: "60-100", 
       pattern: "1 2 3 4",
       description: "Базовое упражнение на ровные четвертные ноты. Играйте вниз на каждую долю такта.",
-      soundType: "quarter"
+      soundType: "quarter",
+      accentPattern: [1, 0, 0, 0]
     },
     { 
       name: "Восьмые ноты", 
       bpm: "70-110", 
       pattern: "1 & 2 & 3 & 4 &",
       description: "Ровные восьмые ноты. Чередуйте удары вниз-вверх, сохраняя равномерность.",
-      soundType: "eighth"
+      soundType: "eighth",
+      accentPattern: [1, 0, 1, 0, 1, 0, 1, 0]
     },
     { 
       name: "Чередование", 
       bpm: "60-90", 
       pattern: "1 2 & 3 4 &",
       description: "Комбинация четвертных и восьмых нот. Акцент на сильные доли.",
-      soundType: "mixed"
+      soundType: "mixed",
+      accentPattern: [1, 0, 1, 0, 1, 0]
     }
   ],
   2: [
@@ -34,21 +55,24 @@ const exercisesData = {
       bpm: "70-100", 
       pattern: "1 & 2 & 3 & 4 &",
       description: "Акценты на слабых долях (&&). Подчеркивайте синкопированные ноты.",
-      soundType: "syncopated"
+      soundType: "syncopated",
+      accentPattern: [0, 1, 0, 1, 0, 1, 0, 1]
     },
     { 
       name: "Смещенный акцент", 
       bpm: "65-95", 
       pattern: "1 & 2 & 3 & 4 &",
       description: "Упражнение со смещенными акцентами. Играйте громче на указанных долях.",
-      soundType: "accented"
+      soundType: "accented",
+      accentPattern: [1, 0, 0, 1, 0, 1, 0, 0]
     },
     { 
       name: "Базовый фанк", 
       bpm: "80-110", 
       pattern: "1 & 2 & 3 & 4 &",
       description: "Основы фанкового ритма. Добавьте ghost notes между основными нотами.",
-      soundType: "funk"
+      soundType: "funk",
+      accentPattern: [1, 0, 0, 1, 0, 0, 1, 0]
     }
   ],
   3: [
@@ -57,21 +81,24 @@ const exercisesData = {
       bpm: "60-90", 
       pattern: "1 e & a 2 e & a",
       description: "Ровные шестнадцатые ноты. Требует высокой точности и контроля.",
-      soundType: "sixteenth"
+      soundType: "sixteenth",
+      accentPattern: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]
     },
     { 
       name: "Пропуск долей", 
       bpm: "65-95", 
       pattern: "1 e & a 2 e & a",
       description: "Упражнение с пропусками некоторых долей. Развивает внутреннее чувство ритма.",
-      soundType: "skip"
+      soundType: "skip",
+      accentPattern: [1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0]
     },
     { 
       name: "Синкопированные 16-е", 
       bpm: "70-100", 
       pattern: "1 e & a 2 e & a",
       description: "Синкопированный ритм в шестнадцатых. Сложное упражнение для продвинутых.",
-      soundType: "syncopated16"
+      soundType: "syncopated16",
+      accentPattern: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
     }
   ],
   4: [
@@ -80,21 +107,24 @@ const exercisesData = {
       bpm: "60-85", 
       pattern: "1 trip let 2 trip let",
       description: "Ритмический рисунок триолями. Три ноты на одну долю.",
-      soundType: "triplet"
+      soundType: "triplet",
+      accentPattern: [1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0]
     },
     { 
       name: "Пунктирный ритм", 
       bpm: "65-90", 
       pattern: "1 & 2 & 3 & 4 &",
       description: "Длинная-короткая ноты. Характерно для многих музыкальных стилей.",
-      soundType: "dotted"
+      soundType: "dotted",
+      accentPattern: [1, 0, 0, 1, 1, 0, 0, 1]
     },
     { 
       name: "Комбинированный", 
       bpm: "70-95", 
       pattern: "1 e & a 2 e & a",
       description: "Сочетание различных ритмических рисунков. Проверка всех навыков.",
-      soundType: "combined"
+      soundType: "combined",
+      accentPattern: [1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1]
     }
   ],
   5: [
@@ -103,21 +133,24 @@ const exercisesData = {
       bpm: "80-110", 
       pattern: "1 e & a 2 e & a",
       description: "Тихие приглушенные ноты между основными. Основа фанкового грува.",
-      soundType: "ghost"
+      soundType: "ghost",
+      accentPattern: [1, 0.3, 1, 0.3, 1, 0.3, 1, 0.3, 1, 0.3, 1, 0.3, 1, 0.3, 1, 0.3]
     },
     { 
       name: "Slap основа", 
       bpm: "85-115", 
       pattern: "1 & 2 & 3 & 4 &",
       description: "Базовая техника slap - thumb и pop. Координация обеих рук.",
-      soundType: "slap"
+      soundType: "slap",
+      accentPattern: [1, 0, 0.5, 0, 1, 0, 0.5, 0]
     },
     { 
       name: "Фанковый грув", 
       bpm: "90-120", 
       pattern: "1 e & a 2 e & a",
       description: "Полноценный фанковый рисунок с ghost notes и акцентами.",
-      soundType: "funkGroove"
+      soundType: "funkGroove",
+      accentPattern: [1, 0.5, 0, 0.3, 1, 0, 0.5, 0, 1, 0.5, 0, 0.3, 1, 0, 0.5, 0]
     }
   ],
   6: [
@@ -126,21 +159,24 @@ const exercisesData = {
       bpm: "70-120", 
       pattern: "various",
       description: "Импровизируйте поверх ритма, экспериментируйте с различными рисунками.",
-      soundType: "free"
+      soundType: "free",
+      accentPattern: [1, 0, 0, 0]
     },
     { 
       name: "Игра поверх бита", 
       bpm: "80-130", 
       pattern: "various",
       description: "Развитие чувства времени. Играйте с небольшим опережением или отставанием.",
-      soundType: "overbeat"
+      soundType: "overbeat",
+      accentPattern: [1, 0, 0, 0]
     },
     { 
       name: "Полиритмия", 
       bpm: "60-100", 
       pattern: "complex",
       description: "Одновременное использование разных метрических рисунков. Высший пилотаж.",
-      soundType: "polyrhythm"
+      soundType: "polyrhythm",
+      accentPattern: [1, 0, 1, 0, 1, 0]
     }
   ]
 };
