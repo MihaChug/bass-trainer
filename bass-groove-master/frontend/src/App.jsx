@@ -5,12 +5,12 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // Типы ритмов для метронома
 const rhythmTypes = [
-  { id: 'quarter', name: 'Четвертные', pattern: '1 2 3 4', beatsPerBar: 4 },
-  { id: 'eighth', name: 'Восьмые', pattern: '1 & 2 & 3 & 4 &', beatsPerBar: 8 },
-  { id: 'sixteenth', name: 'Шестнадцатые', pattern: '1 e & a 2 e & a', beatsPerBar: 16 },
-  { id: 'triplet', name: 'Триоли', pattern: '1 trip let 2 trip let', beatsPerBar: 12 },
-  { id: 'syncopated', name: 'Синкопа', pattern: '1 & 2 & 3 & 4 &', beatsPerBar: 8 },
-  { id: 'funk', name: 'Фанк', pattern: '1 e & a 2 e & a', beatsPerBar: 16 },
+  { id: 'quarter', name: 'Четвертные', pattern: '1 2 3 4', beatsPerBar: 4, labels: ['1', '2', '3', '4'] },
+  { id: 'eighth', name: 'Восьмые', pattern: '1 & 2 & 3 & 4 &', beatsPerBar: 8, labels: ['1', '&', '2', '&', '3', '&', '4', '&'] },
+  { id: 'sixteenth', name: 'Шестнадцатые', pattern: '1 e & a 2 e & a', beatsPerBar: 16, labels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a'] },
+  { id: 'triplet', name: 'Триоли', pattern: '1 trip let 2 trip let', beatsPerBar: 6, labels: ['1', 'trip', 'let', '2', 'trip', 'let'] },
+  { id: 'syncopated', name: 'Синкопа', pattern: '1 & 2 & 3 & 4 &', beatsPerBar: 8, labels: ['1', '&', '2', '&', '3', '&', '4', '&'], accents: [0, 1, 0, 1, 0, 1, 0, 1] },
+  { id: 'funk', name: 'Фанк', pattern: '1 e & a 2 e & a', beatsPerBar: 16, labels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a'], accents: [1, 0, 1, 0, 0, 1, 0, 0] },
 ];
 
 // Типы звуков для метронома
@@ -21,180 +21,216 @@ const soundTypes = [
   { id: 'highhat', name: 'Хай-хэт', wave: 'square', freq: 2000 },
 ];
 
-// Данные упражнений по этапам с описаниями и типами звуков метронома
+// Данные упражнений по этапам с описаниями
 const exercisesData = {
   1: [
     { 
+      id: 'ex1_1',
       name: "Четвертные ноты", 
       bpm: "60-100", 
       pattern: "1 2 3 4",
       description: "Базовое упражнение на ровные четвертные ноты. Играйте вниз на каждую долю такта.",
       soundType: "quarter",
       accentPattern: [1, 0, 0, 0],
-      beatLabels: ['1', '2', '3', '4']
+      beatLabels: ['1', '2', '3', '4'],
+      beatsPerBar: 4
     },
     { 
+      id: 'ex1_2',
       name: "Восьмые ноты", 
       bpm: "70-110", 
       pattern: "1 & 2 & 3 & 4 &",
       description: "Ровные восьмые ноты. Чередуйте удары вниз-вверх, сохраняя равномерность.",
       soundType: "eighth",
       accentPattern: [1, 0, 1, 0, 1, 0, 1, 0],
-      beatLabels: ['1', '&', '2', '&', '3', '&', '4', '&']
+      beatLabels: ['1', '&', '2', '&', '3', '&', '4', '&'],
+      beatsPerBar: 8
     },
     { 
+      id: 'ex1_3',
       name: "Чередование", 
       bpm: "60-90", 
       pattern: "1 2 & 3 4 &",
       description: "Комбинация четвертных и восьмых нот. Акцент на сильные доли.",
       soundType: "mixed",
       accentPattern: [1, 0, 1, 0, 1, 0],
-      beatLabels: ['1', '2', '&', '3', '4', '&']
+      beatLabels: ['1', '2', '&', '3', '4', '&'],
+      beatsPerBar: 6
     }
   ],
   2: [
     { 
+      id: 'ex2_1',
       name: "Синкопа на &", 
       bpm: "70-100", 
       pattern: "1 & 2 & 3 & 4 &",
-      description: "Акценты на слабых долях (&&). Подчеркивайте синкопированные ноты.",
+      description: "Акценты на слабых долях (&). Подчеркивайте синкопированные ноты.",
       soundType: "syncopated",
       accentPattern: [0, 1, 0, 1, 0, 1, 0, 1],
-      beatLabels: ['1', '&', '2', '&', '3', '&', '4', '&']
+      beatLabels: ['1', '&', '2', '&', '3', '&', '4', '&'],
+      beatsPerBar: 8
     },
     { 
+      id: 'ex2_2',
       name: "Смещенный акцент", 
       bpm: "65-95", 
       pattern: "1 & 2 & 3 & 4 &",
       description: "Упражнение со смещенными акцентами. Играйте громче на указанных долях.",
       soundType: "accented",
       accentPattern: [1, 0, 0, 1, 0, 1, 0, 0],
-      beatLabels: ['1', '&', '2', '&', '3', '&', '4', '&']
+      beatLabels: ['1', '&', '2', '&', '3', '&', '4', '&'],
+      beatsPerBar: 8
     },
     { 
+      id: 'ex2_3',
       name: "Базовый фанк", 
       bpm: "80-110", 
       pattern: "1 & 2 & 3 & 4 &",
       description: "Основы фанкового ритма. Добавьте ghost notes между основными нотами.",
       soundType: "funk",
       accentPattern: [1, 0, 0, 1, 0, 0, 1, 0],
-      beatLabels: ['1', '&', '2', '&', '3', '&', '4', '&']
+      beatLabels: ['1', '&', '2', '&', '3', '&', '4', '&'],
+      beatsPerBar: 8
     }
   ],
   3: [
     { 
+      id: 'ex3_1',
       name: "Шестнадцатые", 
       bpm: "60-90", 
       pattern: "1 e & a 2 e & a",
       description: "Ровные шестнадцатые ноты. Требует высокой точности и контроля.",
       soundType: "sixteenth",
       accentPattern: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-      beatLabels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a']
+      beatLabels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a'],
+      beatsPerBar: 16
     },
     { 
+      id: 'ex3_2',
       name: "Пропуск долей", 
       bpm: "65-95", 
       pattern: "1 e & a 2 e & a",
       description: "Упражнение с пропусками некоторых долей. Развивает внутреннее чувство ритма.",
       soundType: "skip",
       accentPattern: [1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0],
-      beatLabels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a']
+      beatLabels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a'],
+      beatsPerBar: 16
     },
     { 
+      id: 'ex3_3',
       name: "Синкопированные 16-е", 
       bpm: "70-100", 
       pattern: "1 e & a 2 e & a",
       description: "Синкопированный ритм в шестнадцатых. Сложное упражнение для продвинутых.",
       soundType: "syncopated16",
       accentPattern: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-      beatLabels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a']
+      beatLabels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a'],
+      beatsPerBar: 16
     }
   ],
   4: [
     { 
+      id: 'ex4_1',
       name: "Триоли", 
       bpm: "60-85", 
       pattern: "1 trip let 2 trip let",
       description: "Ритмический рисунок триолями. Три ноты на одну долю.",
       soundType: "triplet",
       accentPattern: [1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
-      beatLabels: ['1', 'trip', 'let', '2', 'trip', 'let']
+      beatLabels: ['1', 'trip', 'let', '2', 'trip', 'let'],
+      beatsPerBar: 12
     },
     { 
+      id: 'ex4_2',
       name: "Пунктирный ритм", 
       bpm: "65-90", 
       pattern: "1 & 2 & 3 & 4 &",
       description: "Длинная-короткая ноты. Характерно для многих музыкальных стилей.",
       soundType: "dotted",
       accentPattern: [1, 0, 0, 1, 1, 0, 0, 1],
-      beatLabels: ['1', '&', '2', '&', '3', '&', '4', '&']
+      beatLabels: ['1', '&', '2', '&', '3', '&', '4', '&'],
+      beatsPerBar: 8
     },
     { 
+      id: 'ex4_3',
       name: "Комбинированный", 
       bpm: "70-95", 
       pattern: "1 e & a 2 e & a",
       description: "Сочетание различных ритмических рисунков. Проверка всех навыков.",
       soundType: "combined",
       accentPattern: [1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1],
-      beatLabels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a']
+      beatLabels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a'],
+      beatsPerBar: 16
     }
   ],
   5: [
     { 
+      id: 'ex5_1',
       name: "Ghost notes", 
       bpm: "80-110", 
       pattern: "1 e & a 2 e & a",
       description: "Тихие приглушенные ноты между основными. Основа фанкового грува.",
       soundType: "ghost",
       accentPattern: [1, 0.3, 1, 0.3, 1, 0.3, 1, 0.3, 1, 0.3, 1, 0.3, 1, 0.3, 1, 0.3],
-      beatLabels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a']
+      beatLabels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a'],
+      beatsPerBar: 16
     },
     { 
+      id: 'ex5_2',
       name: "Slap основа", 
       bpm: "85-115", 
       pattern: "1 & 2 & 3 & 4 &",
       description: "Базовая техника slap - thumb и pop. Координация обеих рук.",
       soundType: "slap",
       accentPattern: [1, 0, 0.5, 0, 1, 0, 0.5, 0],
-      beatLabels: ['1', '&', '2', '&', '3', '&', '4', '&']
+      beatLabels: ['1', '&', '2', '&', '3', '&', '4', '&'],
+      beatsPerBar: 8
     },
     { 
+      id: 'ex5_3',
       name: "Фанковый грув", 
       bpm: "90-120", 
       pattern: "1 e & a 2 e & a",
       description: "Полноценный фанковый рисунок с ghost notes и акцентами.",
       soundType: "funkGroove",
       accentPattern: [1, 0.5, 0, 0.3, 1, 0, 0.5, 0, 1, 0.5, 0, 0.3, 1, 0, 0.5, 0],
-      beatLabels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a']
+      beatLabels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a'],
+      beatsPerBar: 16
     }
   ],
   6: [
     { 
+      id: 'ex6_1',
       name: "Свободная импровизация", 
       bpm: "70-120", 
       pattern: "various",
       description: "Импровизируйте поверх ритма, экспериментируйте с различными рисунками.",
       soundType: "free",
       accentPattern: [1, 0, 0, 0],
-      beatLabels: ['1', '2', '3', '4']
+      beatLabels: ['1', '2', '3', '4'],
+      beatsPerBar: 4
     },
     { 
+      id: 'ex6_2',
       name: "Игра поверх бита", 
       bpm: "80-130", 
       pattern: "various",
       description: "Развитие чувства времени. Играйте с небольшим опережением или отставанием.",
       soundType: "overbeat",
       accentPattern: [1, 0, 0, 0],
-      beatLabels: ['1', '2', '3', '4']
+      beatLabels: ['1', '2', '3', '4'],
+      beatsPerBar: 4
     },
     { 
+      id: 'ex6_3',
       name: "Полиритмия", 
       bpm: "60-100", 
       pattern: "complex",
       description: "Одновременное использование разных метрических рисунков. Высший пилотаж.",
       soundType: "polyrhythm",
       accentPattern: [1, 0, 1, 0, 1, 0],
-      beatLabels: ['1', '2', '3', '4', '5', '6']
+      beatLabels: ['1', '2', '3', '4', '5', '6'],
+      beatsPerBar: 6
     }
   ]
 };
@@ -203,11 +239,25 @@ function App() {
   const [activeTab, setActiveTab] = useState('stages');
   const [currentStage, setCurrentStage] = useState(null);
   const [currentExercise, setCurrentExercise] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [bpm, setBpm] = useState(120);
-  const [audioContext, setAudioContext] = useState(null);
-  const [metronomeInterval, setMetronomeInterval] = useState(null);
-  const [currentBeat, setCurrentBeat] = useState(0);
+  
+  // Метроном для упражнений
+  const [exerciseBpm, setExerciseBpm] = useState(80);
+  const [isExercisePlaying, setIsExercisePlaying] = useState(false);
+  const [exerciseBeat, setExerciseBeat] = useState(0);
+  
+  // Метроном (отдельная страница)
+  const [metronomeBpm, setMetronomeBpm] = useState(120);
+  const [isMetronomePlaying, setIsMetronomePlaying] = useState(false);
+  const [metronomeBeat, setMetronomeBeat] = useState(0);
+  const [selectedRhythm, setSelectedRhythm] = useState(rhythmTypes[0]);
+  const [selectedSound, setSelectedSound] = useState(soundTypes[0]);
+  
+  // Audio refs
+  const audioContextRef = useRef(null);
+  const exerciseIntervalRef = useRef(null);
+  const metronomeIntervalRef = useRef(null);
+  
+  // Запись и анализ
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [analyser, setAnalyser] = useState(null);
@@ -224,16 +274,19 @@ function App() {
   }, []);
 
   // Инициализация AudioContext
-  const initAudioContext = useCallback(() => {
-    if (!audioContext) {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      setAudioContext(ctx);
+  const getAudioContext = useCallback(() => {
+    if (!audioContextRef.current) {
+      audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
     }
-  }, [audioContext]);
+    return audioContextRef.current;
+  }, []);
 
   // Переключение вкладок
   const switchTab = (tabId) => {
     setActiveTab(tabId);
+    // Останавливаем все звуки при переключении
+    stopExerciseMetronome();
+    stopMetronome();
   };
 
   // Выбор этапа
@@ -251,7 +304,7 @@ function App() {
     if (exerciseList) {
       exerciseList.innerHTML = '';
       const exercises = exercisesData[stage] || [];
-      exercises.forEach((exercise, index) => {
+      exercises.forEach((exercise) => {
         const li = document.createElement('li');
         li.className = 'exercise-item';
         li.innerHTML = `
@@ -265,7 +318,9 @@ function App() {
           document.querySelectorAll('.exercise-item').forEach(item => item.classList.remove('active'));
           li.classList.add('active');
           setCurrentExercise(exercise);
-          setBpm(parseInt(exercise.bpm.split('-')[0]));
+          setExerciseBpm(parseInt(exercise.bpm.split('-')[0]));
+          stopExerciseMetronome();
+          setExerciseBeat(0);
         });
         exerciseList.appendChild(li);
       });
@@ -277,129 +332,194 @@ function App() {
     }
   };
 
-  // Метроном функции
-  const setBPM = (newBpm) => {
-    setBpm(newBpm);
-    if (isPlaying) {
-      stopMetronome();
-      startMetronome();
+  // === МЕТРОНОМ ДЛЯ УПРАЖНЕНИЙ ===
+  const playExerciseClick = (beatIndex) => {
+    if (!currentExercise) return;
+    
+    const ctx = getAudioContext();
+    if (ctx.state === 'suspended') {
+      ctx.resume();
+    }
+    
+    const soundType = currentExercise.soundType || 'quarter';
+    const accentPattern = currentExercise.accentPattern || [];
+    const isAccent = accentPattern[beatIndex % accentPattern.length] === 1;
+    
+    // Визуальный индикатор
+    setExerciseBeat(beatIndex);
+    
+    // Звук
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    
+    let frequency = 1000;
+    let duration = 0.1;
+    let volume = isAccent ? 0.4 : 0.2;
+    
+    switch(soundType) {
+      case 'quarter':
+        frequency = beatIndex % 4 === 0 ? 1200 : 800;
+        break;
+      case 'eighth':
+        frequency = beatIndex % 2 === 0 ? 1400 : 900;
+        duration = 0.05;
+        break;
+      case 'sixteenth':
+        frequency = beatIndex % 4 === 0 ? 1600 : 1000;
+        duration = 0.03;
+        volume = isAccent ? 0.3 : 0.15;
+        break;
+      case 'triplet':
+        frequency = beatIndex % 3 === 0 ? 1100 : 750;
+        duration = 0.08;
+        break;
+      case 'syncopated':
+      case 'syncopated16':
+        frequency = isAccent ? 1300 : 950;
+        duration = 0.06;
+        break;
+      case 'funk':
+      case 'funkGroove':
+        frequency = beatIndex % 4 === 0 ? 1500 : (beatIndex % 2 === 0 ? 1100 : 850);
+        duration = 0.04;
+        volume = beatIndex % 4 === 0 ? 0.4 : 0.2;
+        break;
+      case 'ghost':
+        frequency = beatIndex % 2 === 0 ? 1000 : 600;
+        duration = 0.02;
+        volume = beatIndex % 2 === 0 ? 0.3 : 0.1;
+        break;
+      case 'slap':
+        frequency = beatIndex % 2 === 0 ? 1800 : 1200;
+        duration = 0.03;
+        volume = 0.35;
+        break;
+      case 'dotted':
+        frequency = beatIndex % 2 === 0 ? 1250 : 850;
+        duration = beatIndex % 2 === 0 ? 0.12 : 0.04;
+        break;
+      case 'accented':
+        frequency = isAccent ? 1400 : 900;
+        volume = isAccent ? 0.4 : 0.2;
+        break;
+      default:
+        frequency = beatIndex % 4 === 0 ? 1200 : 800;
+    }
+    
+    oscillator.frequency.value = frequency;
+    oscillator.type = 'sine';
+    gainNode.gain.setValueAtTime(volume, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+    
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + duration);
+  };
+
+  const startExerciseMetronome = () => {
+    if (!currentExercise) return;
+    
+    setIsExercisePlaying(true);
+    const interval = (60 / exerciseBpm) * 1000;
+    let beatCount = 0;
+    
+    playExerciseClick(0);
+    
+    exerciseIntervalRef.current = setInterval(() => {
+      beatCount++;
+      playExerciseClick(beatCount);
+      setExerciseBeat(beatCount);
+    }, interval);
+  };
+
+  const stopExerciseMetronome = () => {
+    setIsExercisePlaying(false);
+    if (exerciseIntervalRef.current) {
+      clearInterval(exerciseIntervalRef.current);
+      exerciseIntervalRef.current = null;
+    }
+    setExerciseBeat(0);
+  };
+
+  const toggleExerciseMetronome = () => {
+    if (isExercisePlaying) {
+      stopExerciseMetronome();
+    } else {
+      startExerciseMetronome();
     }
   };
 
-  const playClick = (beatIndex) => {
-    const useSound = true;
-    const soundType = currentExercise?.soundType || 'quarter';
+  // === ОТДЕЛЬНЫЙ МЕТРОНОМ ===
+  const playMetronomeClick = (beatIndex) => {
+    const ctx = getAudioContext();
+    if (ctx.state === 'suspended') {
+      ctx.resume();
+    }
     
-    // Визуальный индикатор
-    const dots = document.querySelectorAll('.beat-dot');
-    dots.forEach(dot => dot.classList.remove('active'));
-    if (dots[beatIndex % dots.length]) {
-      dots[beatIndex % dots.length].classList.add('active');
-    }
-
-    // Звук с различными тонами в зависимости от типа упражнения
-    if (useSound && audioContext) {
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      // Различные частоты и длительности для разных типов упражнений
-      let frequency = 1000;
-      let duration = 0.1;
-      let volume = 0.3;
-      
-      switch(soundType) {
-        case 'quarter':
-          frequency = beatIndex === 0 ? 1200 : 800;
-          break;
-        case 'eighth':
-          frequency = beatIndex === 0 ? 1400 : 900;
-          duration = 0.05;
-          break;
-        case 'sixteenth':
-          frequency = beatIndex === 0 ? 1600 : 1000;
-          duration = 0.03;
-          volume = 0.25;
-          break;
-        case 'triplet':
-          frequency = beatIndex === 0 ? 1100 : 750;
-          duration = 0.08;
-          break;
-        case 'syncopated':
-        case 'syncopated16':
-          frequency = beatIndex % 2 === 0 ? 1300 : 950;
-          duration = 0.06;
-          break;
-        case 'funk':
-        case 'funkGroove':
-          frequency = beatIndex === 0 ? 1500 : (beatIndex % 2 === 0 ? 1100 : 850);
-          duration = 0.04;
-          volume = beatIndex === 0 ? 0.4 : 0.2;
-          break;
-        case 'ghost':
-          frequency = beatIndex === 0 ? 1000 : 600;
-          duration = 0.02;
-          volume = beatIndex === 0 ? 0.3 : 0.1;
-          break;
-        case 'slap':
-          frequency = beatIndex === 0 ? 1800 : 1200;
-          duration = 0.03;
-          volume = 0.35;
-          break;
-        case 'dotted':
-          frequency = beatIndex === 0 ? 1250 : 850;
-          duration = beatIndex % 2 === 0 ? 0.12 : 0.04;
-          break;
-        case 'accented':
-          frequency = beatIndex === 0 ? 1400 : 900;
-          volume = beatIndex % 2 === 0 ? 0.4 : 0.2;
-          break;
-        default:
-          frequency = beatIndex === 0 ? 1200 : 800;
-      }
-      
-      oscillator.frequency.value = frequency;
-      gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + duration);
-    }
+    const waveType = selectedSound.wave || 'sine';
+    const baseFreq = selectedSound.freq || 1000;
+    const isFirstBeat = beatIndex % selectedRhythm.beatsPerBar === 0;
+    
+    setMetronomeBeat(beatIndex);
+    
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    
+    const frequency = isFirstBeat ? baseFreq + 200 : baseFreq;
+    const duration = 0.1;
+    const volume = isFirstBeat ? 0.4 : 0.2;
+    
+    oscillator.type = waveType;
+    oscillator.frequency.value = frequency;
+    gainNode.gain.setValueAtTime(volume, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+    
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + duration);
   };
 
   const startMetronome = () => {
-    setIsPlaying(true);
-    setCurrentBeat(0);
-    const interval = (60 / bpm) * 1000;
-
-    playClick(0);
-    const intervalId = setInterval(() => {
-      setCurrentBeat(prev => {
-        const nextBeat = prev + 1;
-        playClick(nextBeat % 4);
-        return nextBeat;
-      });
+    setIsMetronomePlaying(true);
+    const interval = (60 / metronomeBpm) * 1000;
+    let beatCount = 0;
+    
+    playMetronomeClick(0);
+    
+    metronomeIntervalRef.current = setInterval(() => {
+      beatCount++;
+      playMetronomeClick(beatCount);
+      setMetronomeBeat(beatCount);
     }, interval);
-    setMetronomeInterval(intervalId);
   };
 
   const stopMetronome = () => {
-    setIsPlaying(false);
-    if (metronomeInterval) {
-      clearInterval(metronomeInterval);
-      setMetronomeInterval(null);
+    setIsMetronomePlaying(false);
+    if (metronomeIntervalRef.current) {
+      clearInterval(metronomeIntervalRef.current);
+      metronomeIntervalRef.current = null;
     }
-    document.querySelectorAll('.beat-dot').forEach(dot => dot.classList.remove('active'));
+    setMetronomeBeat(0);
   };
 
   const toggleMetronome = () => {
-    initAudioContext();
-    if (isPlaying) {
+    if (isMetronomePlaying) {
       stopMetronome();
     } else {
       startMetronome();
+    }
+  };
+
+  // Изменение темпа для метронома
+  const changeMetronomeBpm = (newBpm) => {
+    setMetronomeBpm(newBpm);
+    if (isMetronomePlaying) {
+      stopMetronome();
+      setTimeout(startMetronome, 50);
     }
   };
 
@@ -408,10 +528,10 @@ function App() {
     if (!isRecording) {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        initAudioContext();
+        const ctx = getAudioContext();
 
-        const newAnalyser = audioContext.createAnalyser();
-        const source = audioContext.createMediaStreamSource(stream);
+        const newAnalyser = ctx.createAnalyser();
+        const source = ctx.createMediaStreamSource(stream);
         source.connect(newAnalyser);
         newAnalyser.fftSize = 64;
         setAnalyser(newAnalyser);
@@ -429,7 +549,6 @@ function App() {
         setIsRecording(true);
         setMediaRecorder(recorder);
 
-        // Запуск визуализатора
         visualize(newAnalyser);
       } catch (err) {
         alert('Ошибка доступа к микрофону: ' + err.message);
@@ -476,264 +595,301 @@ function App() {
       setAnalysisResults(data.analysis);
     } catch (error) {
       console.error('Error analyzing audio:', error);
-      // Fallback to local analysis
       simulateAnalysis(audioBlob);
     }
   };
 
   const simulateAnalysis = (audioBlob) => {
-    // Локальная симуляция анализа если сервер недоступен
     const results = {
       rhythm_accuracy: Math.floor(Math.random() * 30) + 60,
       tempo_stability: Math.floor(Math.random() * 30) + 60,
       attack_clarity: Math.floor(Math.random() * 30) + 60,
       dynamics: Math.floor(Math.random() * 30) + 60,
-      overall_score: 0,
-      duration: 10,
+      overall_score: Math.floor(Math.random() * 25) + 65,
+      duration: audioBlob.size / 44100,
       sample_rate: 44100,
-      device_used: 'local'
+      device_used: deviceInfo?.device_type || 'CPU'
     };
-    results.overall_score = Math.round(
-      (results.rhythm_accuracy + results.tempo_stability + 
-       results.attack_clarity + results.dynamics) / 4
-    );
     setAnalysisResults(results);
   };
 
-  const resetAnalysis = () => {
-    setAnalysisResults(null);
+  // Рендер визуализации акцентов для упражнения
+  const renderExerciseVisualization = () => {
+    if (!currentExercise) return null;
+    
+    const { accentPattern, beatLabels } = currentExercise;
+    
+    return (
+      <div className="visualization-container">
+        <h4>Визуализация ритма:</h4>
+        <div className="beat-dots-container">
+          {beatLabels.map((label, index) => {
+            const isAccent = accentPattern[index] === 1 || accentPattern[index] > 0.5;
+            const isActive = exerciseBeat % beatLabels.length === index;
+            
+            return (
+              <div key={index} className="beat-dot-wrapper">
+                <div 
+                  className={`beat-dot ${isActive ? 'active' : ''} ${isAccent ? 'accent' : ''}`}
+                  style={{
+                    transform: isActive ? 'scale(1.3)' : 'scale(1)',
+                    backgroundColor: isAccent ? '#ff6b6b' : '#4ecdc4',
+                    boxShadow: isActive ? '0 0 15px rgba(255,107,107,0.8)' : 'none'
+                  }}
+                />
+                <span className="beat-label">{label}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
   };
 
-  const handleFileUpload = async (file) => {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/analyze/audio`, {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!response.ok) {
-        throw new Error('Analysis failed');
-      }
-
-      const data = await response.json();
-      setAnalysisResults(data.analysis);
-    } catch (error) {
-      console.error('Error analyzing audio:', error);
-      simulateAnalysis(file);
-    }
+  // Рендер визуализации для метронома
+  const renderMetronomeVisualization = () => {
+    const { beatsPerBar, labels } = selectedRhythm;
+    
+    return (
+      <div className="visualization-container">
+        <h4>Визуализация ритма:</h4>
+        <div className="beat-dots-container">
+          {labels.map((label, index) => {
+            const isActive = metronomeBeat % beatsPerBar === index;
+            
+            return (
+              <div key={index} className="beat-dot-wrapper">
+                <div 
+                  className={`beat-dot ${isActive ? 'active' : ''}`}
+                  style={{
+                    transform: isActive ? 'scale(1.3)' : 'scale(1)',
+                    backgroundColor: index === 0 ? '#ff6b6b' : '#4ecdc4',
+                    boxShadow: isActive ? '0 0 15px rgba(78,205,196,0.8)' : 'none'
+                  }}
+                />
+                <span className="beat-label">{label}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
   };
 
   return (
     <div className="app">
-      <header>
+      <header className="app-header">
         <h1>🎸 Bass Groove Master</h1>
-        <p>Мастер синкопации и грува на бас-гитаре</p>
         {deviceInfo && (
           <div className="device-info">
-            <span className={`accelerator-badge ${deviceInfo.device_type}`}>
-              {deviceInfo.device_type === 'cuda' && '🚀 CUDA'}
-              {deviceInfo.device_type === 'mps' && '⚡ MPS'}
-              {deviceInfo.device_type === 'cpu' && '💻 CPU'}
-            </span>
+            <span>🚀 {deviceInfo.device_type === 'cuda' ? 'NVIDIA GPU' : deviceInfo.device_type === 'mps' ? 'Apple Silicon' : 'CPU'}</span>
           </div>
         )}
       </header>
 
-      <nav className="tabs">
-        <button className={`tab-btn ${activeTab === 'stages' ? 'active' : ''}`} onClick={() => switchTab('stages')}>
-          Этапы обучения
+      <nav className="main-nav">
+        <button 
+          className={`nav-btn ${activeTab === 'stages' ? 'active' : ''}`}
+          onClick={() => switchTab('stages')}
+        >
+          📚 Этапы обучения
         </button>
-        <button className={`tab-btn ${activeTab === 'metronome' ? 'active' : ''}`} onClick={() => switchTab('metronome')}>
-          Метроном
+        <button 
+          className={`nav-btn ${activeTab === 'metronome' ? 'active' : ''}`}
+          onClick={() => switchTab('metronome')}
+        >
+          🎵 Метроном
         </button>
-        <button className={`tab-btn ${activeTab === 'compositions' ? 'active' : ''}`} onClick={() => switchTab('compositions')}>
-          Композиции
-        </button>
-        <button className={`tab-btn ${activeTab === 'analysis' ? 'active' : ''}`} onClick={() => switchTab('analysis')}>
-          Анализ аудио
+        <button 
+          className={`nav-btn ${activeTab === 'record' ? 'active' : ''}`}
+          onClick={() => switchTab('record')}
+        >
+          🎤 Запись и анализ
         </button>
       </nav>
 
-      {/* Этапы обучения */}
-      {activeTab === 'stages' && (
-        <div className="tab-content active">
-          <div className="card">
-            <h2>📚 Выберите этап обучения</h2>
-            <div className="stage-grid">
-              {[
-                { num: 1, title: "Базовый ритм", desc: "Четвертные и восьмые ноты, базовые ритмические рисунки", level: "Новичок" },
-                { num: 2, title: "Синкопация", desc: "Акценты на слабых долях, смещение ритма", level: "Начинающий" },
-                { num: 3, title: "Шестнадцатые", desc: "Быстрые ритмические рисунки, точность", level: "Средний" },
-                { num: 4, title: "Сложные ритмы", desc: "Триоли, пунктирный ритм, комбинации", level: "Продвинутый" },
-                { num: 5, title: "Фанк и Slap", desc: "Ghost notes, slap техника, грув", level: "Высокий" },
-                { num: 6, title: "Мастерство", desc: "Импровизация, полиритмия, свободная игра", level: "Мастер" }
-              ].map(stage => (
-                <div
-                  key={stage.num}
-                  className={`stage-card ${currentStage === stage.num ? 'selected' : ''}`}
-                  onClick={() => handleStageSelect(stage.num)}
+      <main className="main-content">
+        {/* Вкладка этапов */}
+        {activeTab === 'stages' && (
+          <div className="stages-tab">
+            <div className="stages-grid">
+              {[1, 2, 3, 4, 5, 6].map(stage => (
+                <div 
+                  key={stage}
+                  className={`stage-card ${currentStage === stage ? 'active' : ''}`}
+                  onClick={() => handleStageSelect(stage)}
                 >
-                  <span className="stage-level">{stage.level}</span>
-                  <h3>{stage.num}. {stage.title}</h3>
-                  <p>{stage.desc}</p>
+                  <h3>Этап {stage}</h3>
+                  <p>{stage === 1 && 'Базовый ритм'}
+                     {stage === 2 && 'Синкопация'}
+                     {stage === 3 && 'Шестнадцатые'}
+                     {stage === 4 && 'Сложные ритмы'}
+                     {stage === 5 && 'Фанк и Slap'}
+                     {stage === 6 && 'Мастерство'}
+                  </p>
                 </div>
               ))}
             </div>
+
+            {/* Список упражнений */}
+            {currentStage && (
+              <div id="exercises-card" className="exercises-card">
+                <h2>Упражнения этапа <span id="selected-stage-num">{currentStage}</span></h2>
+                <ul id="exercise-list" className="exercise-list"></ul>
+                
+                {/* Детали упражнения с встроенным метрономом */}
+                {currentExercise && (
+                  <div className="exercise-details">
+                    <h3>{currentExercise.name}</h3>
+                    <p className="exercise-desc-detail">{currentExercise.description}</p>
+                    
+                    <div className="metronome-controls">
+                      <div className="bpm-control">
+                        <label>Темп: {exerciseBpm} BPM</label>
+                        <input 
+                          type="range" 
+                          min="40" 
+                          max="200" 
+                          value={exerciseBpm}
+                          onChange={(e) => setExerciseBpm(parseInt(e.target.value))}
+                        />
+                      </div>
+                      
+                      <button 
+                        className={`play-btn ${isExercisePlaying ? 'playing' : ''}`}
+                        onClick={toggleExerciseMetronome}
+                      >
+                        {isExercisePlaying ? '⏹ Стоп' : '▶ Старт'}
+                      </button>
+                    </div>
+                    
+                    {renderExerciseVisualization()}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
+        )}
 
-          <div id="exercises-card" className="card" style={{display: 'none'}}>
-            <h2>Упражнения этапа <span id="selected-stage-num"></span></h2>
-            <ul id="exercise-list" className="exercise-list"></ul>
-            <button className="btn" onClick={() => switchTab('metronome')}>▶ Начать практику</button>
-          </div>
-        </div>
-      )}
-
-      {/* Метроном */}
-      {activeTab === 'metronome' && (
-        <div className="tab-content active">
-          <div className="card metronome-section">
-            <h2>🥁 Метроном</h2>
-            <div className="metronome-display">{bpm} BPM</div>
-            <div className="metronome-controls">
-              <button className="control-btn" onClick={() => setBPM(bpm - 5)}>−</button>
-              <button className={`control-btn large ${isPlaying ? 'playing' : ''}`} onClick={toggleMetronome}>
-                {isPlaying ? '⏹' : '▶'}
-              </button>
-              <button className="control-btn" onClick={() => setBPM(bpm + 5)}>+</button>
-            </div>
-            <div className="bpm-slider">
-              <input
-                type="range"
-                id="bpm-range"
-                min="40"
-                max="200"
-                value={bpm}
-                onChange={(e) => setBPM(parseInt(e.target.value))}
-              />
-            </div>
-            <div className="beat-indicator">
-              {[0, 1, 2, 3].map(i => (
-                <div key={i} className="beat-dot"></div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Композиции */}
-      {activeTab === 'compositions' && (
-        <div className="tab-content active">
-          <div className="card">
-            <h2>🎵 Известные композиции для практики</h2>
-            <div className="composition-grid">
-              {[
-                { title: "Another One Bites the Dust", artist: "Queen", desc: "Классический фанковый басовый рифф", pattern: "1 & 2 & 3 & 4 &" },
-                { title: "Billie Jean", artist: "Michael Jackson", desc: "Иконический басовый грув", pattern: "1 e & a 2 e & a" },
-                { title: "Come Together", artist: "The Beatles", desc: "Блюзовый грув с синкопами", pattern: "1 & 2 & 3 & 4 &" }
-              ].map((comp, i) => (
-                <div key={i} className="composition-card">
-                  <h3>{comp.title}</h3>
-                  <p className="artist">{comp.artist}</p>
-                  <p className="description">{comp.desc}</p>
-                  <div className="groove-pattern">{comp.pattern}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Анализ аудио */}
-      {activeTab === 'analysis' && (
-        <div className="tab-content active">
-          <div className="card upload-section">
-            <h2>🎤 Анализ вашей игры</h2>
-            <div className="upload-area" id="upload-area">
-              <div className="upload-icon">📁</div>
-              <h3>Перетащите аудио файл сюда</h3>
-              <p style={{color: '#b2bec3', margin: '10px 0'}}>или</p>
-              <button className="btn" onClick={() => document.getElementById('file-input').click()}>
-                Выбрать файл
-              </button>
-              <input
-                type="file"
-                id="file-input"
-                className="file-input"
-                accept="audio/*"
-                onChange={(e) => e.target.files[0] && handleFileUpload(e.target.files[0])}
-              />
-            </div>
-
-            <div style={{margin: '20px 0'}}>
-              <p style={{color: '#b2bec3', marginBottom: '10px'}}>Или запишите прямо сейчас:</p>
-              <button className="btn" onClick={toggleRecording}>
-                {isRecording ? '⏹ Остановить запись' : '🎙️ Начать запись'}
-              </button>
-            </div>
-
-            <div className="visualizer" id="visualizer">
-              {visualizerData.map((value, i) => (
-                <div
-                  key={i}
-                  className="visualizer-bar"
-                  style={{height: `${value / 255 * 130}px`}}
-                ></div>
-              ))}
-            </div>
-          </div>
-
-          {analysisResults && (
-            <div className="card analysis-results show">
-              <h2>📊 Результаты анализа</h2>
-              <div className="score-circle" style={{
-                background: `conic-gradient(var(--success) ${(analysisResults.overall_score / 100) * 360}deg, var(--dark-bg) 0deg)`
-              }}>
-                <div className="score-inner">
-                  <div className="score-percentage">{analysisResults.overall_score}%</div>
-                  <div className="score-label">Точность</div>
+        {/* Вкладка метронома */}
+        {activeTab === 'metronome' && (
+          <div className="metronome-tab">
+            <h2>🎵 Метроном</h2>
+            
+            <div className="metronome-settings">
+              <div className="setting-group">
+                <h3>Выберите ритм:</h3>
+                <div className="rhythm-options">
+                  {rhythmTypes.map(rhythm => (
+                    <button
+                      key={rhythm.id}
+                      className={`rhythm-btn ${selectedRhythm.id === rhythm.id ? 'active' : ''}`}
+                      onClick={() => {
+                        setSelectedRhythm(rhythm);
+                        if (isMetronomePlaying) {
+                          stopMetronome();
+                          setTimeout(startMetronome, 50);
+                        }
+                      }}
+                    >
+                      {rhythm.name}
+                    </button>
+                  ))}
                 </div>
               </div>
-
-              <div className="analysis-details">
-                <div className="detail-card">
-                  <h4>Ритмическая точность</h4>
-                  <div className="detail-value">{analysisResults.rhythm_accuracy}%</div>
-                </div>
-                <div className="detail-card">
-                  <h4>Стабильность темпа</h4>
-                  <div className="detail-value">{analysisResults.tempo_stability}%</div>
-                </div>
-                <div className="detail-card">
-                  <h4>Четкость атаки</h4>
-                  <div className="detail-value">{analysisResults.attack_clarity}%</div>
-                </div>
-                <div className="detail-card">
-                  <h4>Динамика</h4>
-                  <div className="detail-value">{analysisResults.dynamics}%</div>
+              
+              <div className="setting-group">
+                <h3>Выберите звук:</h3>
+                <div className="sound-options">
+                  {soundTypes.map(sound => (
+                    <button
+                      key={sound.id}
+                      className={`sound-btn ${selectedSound.id === sound.id ? 'active' : ''}`}
+                      onClick={() => setSelectedSound(sound)}
+                    >
+                      {sound.name}
+                    </button>
+                  ))}
                 </div>
               </div>
-
-              <div style={{textAlign: 'center', marginTop: '30px'}}>
-                <button className="btn" onClick={resetAnalysis}>🔄 Новый анализ</button>
-                <button className="btn btn-secondary" onClick={() => switchTab('stages')}>
-                  📚 Вернуться к упражнениям
-                </button>
+              
+              <div className="setting-group">
+                <h3>Темп: {metronomeBpm} BPM</h3>
+                <input 
+                  type="range" 
+                  min="40" 
+                  max="200" 
+                  value={metronomeBpm}
+                  onChange={(e) => changeMetronomeBpm(parseInt(e.target.value))}
+                />
               </div>
             </div>
-          )}
-        </div>
-      )}
+            
+            {renderMetronomeVisualization()}
+            
+            <button 
+              className={`play-btn large ${isMetronomePlaying ? 'playing' : ''}`}
+              onClick={toggleMetronome}
+            >
+              {isMetronomePlaying ? '⏹ Остановить' : '▶ Запустить'}
+            </button>
+          </div>
+        )}
 
-      <footer>
-        <p>Bass Groove Master © 2024 | Развивай свой грув 🎸</p>
-        <p style={{marginTop: '10px', fontSize: '0.9rem'}}>
-          Практикуйтесь регулярно и наслаждайтесь музыкой!
-        </p>
-      </footer>
+        {/* Вкладка записи */}
+        {activeTab === 'record' && (
+          <div className="record-tab">
+            <h2>🎤 Запись и анализ</h2>
+            
+            <button 
+              className={`record-btn ${isRecording ? 'recording' : ''}`}
+              onClick={toggleRecording}
+            >
+              {isRecording ? '⏹ Остановить запись' : '🔴 Начать запись'}
+            </button>
+            
+            {isRecording && visualizerData.length > 0 && (
+              <div className="visualizer">
+                {visualizerData.slice(0, 32).map((value, i) => (
+                  <div
+                    key={i}
+                    className="bar"
+                    style={{ height: `${value / 2.5}px` }}
+                  />
+                ))}
+              </div>
+            )}
+            
+            {analysisResults && (
+              <div className="analysis-results">
+                <h3>Результаты анализа:</h3>
+                <div className="metrics-grid">
+                  <div className="metric">
+                    <span>Точность ритма:</span>
+                    <strong>{analysisResults.rhythm_accuracy}%</strong>
+                  </div>
+                  <div className="metric">
+                    <span>Стабильность темпа:</span>
+                    <strong>{analysisResults.tempo_stability}%</strong>
+                  </div>
+                  <div className="metric">
+                    <span>Четкость атаки:</span>
+                    <strong>{analysisResults.attack_clarity}%</strong>
+                  </div>
+                  <div className="metric">
+                    <span>Динамика:</span>
+                    <strong>{analysisResults.dynamics}%</strong>
+                  </div>
+                  <div className="metric overall">
+                    <span>Общий результат:</span>
+                    <strong>{analysisResults.overall_score}%</strong>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </main>
     </div>
   );
 }

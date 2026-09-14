@@ -2,9 +2,6 @@
 # Build artifacts
 dist/
 build/
-*.min.js
-*.min.css
-*.bundle.js
 
 # Dependencies
 node_modules/
@@ -12,19 +9,44 @@ node_modules/
 # Environment
 .env
 .env.local
-.env.*
+*.env.*
 
 # Editors
 .vscode/
 .idea/
-*.swp
-*.swo
 
 # Logs and temp files
 *.log
 *.tmp
+*.swp
 
-# OS specific
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Compiled
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.a
+*.out
+
+# OS
 .DS_Store
 Thumbs.db
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# Cache
+.mypy_cache/
+.pytest_cache/
+.gradle/
+target/
 ```
