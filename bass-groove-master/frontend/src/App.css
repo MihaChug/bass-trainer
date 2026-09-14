@@ -696,3 +696,152 @@ footer {
   margin-top: 5px;
   font-style: italic;
 }
+
+/* Exercise visualization styles */
+.exercise-practice-section {
+  margin-top: 20px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.exercise-desc-detail {
+  color: #b2bec3;
+  margin-bottom: 20px;
+}
+
+.bpm-control {
+  margin: 20px 0;
+}
+
+.bpm-control label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.bpm-control input[type="range"] {
+  width: 100%;
+}
+
+.exercise-visualization {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.beat-dots-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
+.beat-dot-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.beat-dot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #4ecdc4;
+  transition: all 0.1s ease;
+}
+
+.beat-dot.accent {
+  background-color: #ff6b6b;
+}
+
+.beat-dot.active {
+  transform: scale(1.3) !important;
+  box-shadow: 0 0 20px #00d9ff !important;
+  background-color: #00d9ff !important;
+}
+
+.beat-label {
+  font-size: 0.85rem;
+  color: #b2bec3;
+  font-weight: bold;
+}
+
+.exercise-controls {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #00b894, #00cec9);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #d63031, #e17055);
+}
+
+/* Metronome options */
+.metronome-options {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.option-group h3 {
+  margin-bottom: 15px;
+  color: #00d9ff;
+}
+
+.rhythm-selector,
+.sound-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.rhythm-btn,
+.sound-btn {
+  padding: 10px 15px;
+  border: 2px solid #2d3436;
+  background: rgba(255, 255, 255, 0.05);
+  color: #dfe6e9;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.rhythm-btn:hover,
+.sound-btn:hover {
+  border-color: #00d9ff;
+  background: rgba(0, 217, 255, 0.1);
+}
+
+.rhythm-btn.active,
+.sound-btn.active {
+  border-color: #00d9ff;
+  background: linear-gradient(135deg, #00d9ff, #00b894);
+  color: #fff;
+}
+
+.rhythm-preview {
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.rhythm-preview h4 {
+  margin: 0;
+  color: #00d9ff;
+  font-family: monospace;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .metronome-options {
+    grid-template-columns: 1fr;
+  }
+}
