@@ -3,37 +3,145 @@ import './App.css';
 
 const API_BASE_URL = '/api';
 
-// Данные упражнений по этапам
+// Данные упражнений по этапам с описаниями и типами звуков метронома
 const exercisesData = {
   1: [
-    { name: "Четвертные ноты", bpm: "60-100", pattern: "1 2 3 4" },
-    { name: "Восьмые ноты", bpm: "70-110", pattern: "1 & 2 & 3 & 4 &" },
-    { name: "Чередование", bpm: "60-90", pattern: "1 2 & 3 4 &" }
+    { 
+      name: "Четвертные ноты", 
+      bpm: "60-100", 
+      pattern: "1 2 3 4",
+      description: "Базовое упражнение на ровные четвертные ноты. Играйте вниз на каждую долю такта.",
+      soundType: "quarter"
+    },
+    { 
+      name: "Восьмые ноты", 
+      bpm: "70-110", 
+      pattern: "1 & 2 & 3 & 4 &",
+      description: "Ровные восьмые ноты. Чередуйте удары вниз-вверх, сохраняя равномерность.",
+      soundType: "eighth"
+    },
+    { 
+      name: "Чередование", 
+      bpm: "60-90", 
+      pattern: "1 2 & 3 4 &",
+      description: "Комбинация четвертных и восьмых нот. Акцент на сильные доли.",
+      soundType: "mixed"
+    }
   ],
   2: [
-    { name: "Синкопа на &", bpm: "70-100", pattern: "1 & 2 & 3 & 4 &" },
-    { name: "Смещенный акцент", bpm: "65-95", pattern: "1 & 2 & 3 & 4 &" },
-    { name: "Базовый фанк", bpm: "80-110", pattern: "1 & 2 & 3 & 4 &" }
+    { 
+      name: "Синкопа на &", 
+      bpm: "70-100", 
+      pattern: "1 & 2 & 3 & 4 &",
+      description: "Акценты на слабых долях (&&). Подчеркивайте синкопированные ноты.",
+      soundType: "syncopated"
+    },
+    { 
+      name: "Смещенный акцент", 
+      bpm: "65-95", 
+      pattern: "1 & 2 & 3 & 4 &",
+      description: "Упражнение со смещенными акцентами. Играйте громче на указанных долях.",
+      soundType: "accented"
+    },
+    { 
+      name: "Базовый фанк", 
+      bpm: "80-110", 
+      pattern: "1 & 2 & 3 & 4 &",
+      description: "Основы фанкового ритма. Добавьте ghost notes между основными нотами.",
+      soundType: "funk"
+    }
   ],
   3: [
-    { name: "Шестнадцатые", bpm: "60-90", pattern: "1 e & a 2 e & a" },
-    { name: "Пропуск долей", bpm: "65-95", pattern: "1 e & a 2 e & a" },
-    { name: "Синкопированные 16-е", bpm: "70-100", pattern: "1 e & a 2 e & a" }
+    { 
+      name: "Шестнадцатые", 
+      bpm: "60-90", 
+      pattern: "1 e & a 2 e & a",
+      description: "Ровные шестнадцатые ноты. Требует высокой точности и контроля.",
+      soundType: "sixteenth"
+    },
+    { 
+      name: "Пропуск долей", 
+      bpm: "65-95", 
+      pattern: "1 e & a 2 e & a",
+      description: "Упражнение с пропусками некоторых долей. Развивает внутреннее чувство ритма.",
+      soundType: "skip"
+    },
+    { 
+      name: "Синкопированные 16-е", 
+      bpm: "70-100", 
+      pattern: "1 e & a 2 e & a",
+      description: "Синкопированный ритм в шестнадцатых. Сложное упражнение для продвинутых.",
+      soundType: "syncopated16"
+    }
   ],
   4: [
-    { name: "Триоли", bpm: "60-85", pattern: "1 trip let 2 trip let" },
-    { name: "Пунктирный ритм", bpm: "65-90", pattern: "1 & 2 & 3 & 4 &" },
-    { name: "Комбинированный", bpm: "70-95", pattern: "1 e & a 2 e & a" }
+    { 
+      name: "Триоли", 
+      bpm: "60-85", 
+      pattern: "1 trip let 2 trip let",
+      description: "Ритмический рисунок триолями. Три ноты на одну долю.",
+      soundType: "triplet"
+    },
+    { 
+      name: "Пунктирный ритм", 
+      bpm: "65-90", 
+      pattern: "1 & 2 & 3 & 4 &",
+      description: "Длинная-короткая ноты. Характерно для многих музыкальных стилей.",
+      soundType: "dotted"
+    },
+    { 
+      name: "Комбинированный", 
+      bpm: "70-95", 
+      pattern: "1 e & a 2 e & a",
+      description: "Сочетание различных ритмических рисунков. Проверка всех навыков.",
+      soundType: "combined"
+    }
   ],
   5: [
-    { name: "Ghost notes", bpm: "80-110", pattern: "1 e & a 2 e & a" },
-    { name: "Slap основа", bpm: "85-115", pattern: "1 & 2 & 3 & 4 &" },
-    { name: "Фанковый грув", bpm: "90-120", pattern: "1 e & a 2 e & a" }
+    { 
+      name: "Ghost notes", 
+      bpm: "80-110", 
+      pattern: "1 e & a 2 e & a",
+      description: "Тихие приглушенные ноты между основными. Основа фанкового грува.",
+      soundType: "ghost"
+    },
+    { 
+      name: "Slap основа", 
+      bpm: "85-115", 
+      pattern: "1 & 2 & 3 & 4 &",
+      description: "Базовая техника slap - thumb и pop. Координация обеих рук.",
+      soundType: "slap"
+    },
+    { 
+      name: "Фанковый грув", 
+      bpm: "90-120", 
+      pattern: "1 e & a 2 e & a",
+      description: "Полноценный фанковый рисунок с ghost notes и акцентами.",
+      soundType: "funkGroove"
+    }
   ],
   6: [
-    { name: "Свободная импровизация", bpm: "70-120", pattern: "various" },
-    { name: "Игра поверх бита", bpm: "80-130", pattern: "various" },
-    { name: "Полиритмия", bpm: "60-100", pattern: "complex" }
+    { 
+      name: "Свободная импровизация", 
+      bpm: "70-120", 
+      pattern: "various",
+      description: "Импровизируйте поверх ритма, экспериментируйте с различными рисунками.",
+      soundType: "free"
+    },
+    { 
+      name: "Игра поверх бита", 
+      bpm: "80-130", 
+      pattern: "various",
+      description: "Развитие чувства времени. Играйте с небольшим опережением или отставанием.",
+      soundType: "overbeat"
+    },
+    { 
+      name: "Полиритмия", 
+      bpm: "60-100", 
+      pattern: "complex",
+      description: "Одновременное использование разных метрических рисунков. Высший пилотаж.",
+      soundType: "polyrhythm"
+    }
   ]
 };
 
@@ -93,8 +201,11 @@ function App() {
         const li = document.createElement('li');
         li.className = 'exercise-item';
         li.innerHTML = `
-          <span class="exercise-name">${exercise.name}</span>
-          <span class="exercise-bpm">${exercise.bpm} BPM</span>
+          <div class="exercise-header">
+            <span class="exercise-name">${exercise.name}</span>
+            <span class="exercise-bpm">${exercise.bpm} BPM</span>
+          </div>
+          <p class="exercise-description">${exercise.description}</p>
         `;
         li.addEventListener('click', () => {
           document.querySelectorAll('.exercise-item').forEach(item => item.classList.remove('active'));
@@ -123,6 +234,7 @@ function App() {
 
   const playClick = (beatIndex) => {
     const useSound = true;
+    const soundType = currentExercise?.soundType || 'quarter';
     
     // Визуальный индикатор
     const dots = document.querySelectorAll('.beat-dot');
@@ -131,7 +243,7 @@ function App() {
       dots[beatIndex % dots.length].classList.add('active');
     }
 
-    // Звук
+    // Звук с различными тонами в зависимости от типа упражнения
     if (useSound && audioContext) {
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
@@ -139,14 +251,67 @@ function App() {
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
 
-      const frequency = beatIndex === 0 ? 1200 : 800;
+      // Различные частоты и длительности для разных типов упражнений
+      let frequency = 1000;
+      let duration = 0.1;
+      let volume = 0.3;
+      
+      switch(soundType) {
+        case 'quarter':
+          frequency = beatIndex === 0 ? 1200 : 800;
+          break;
+        case 'eighth':
+          frequency = beatIndex === 0 ? 1400 : 900;
+          duration = 0.05;
+          break;
+        case 'sixteenth':
+          frequency = beatIndex === 0 ? 1600 : 1000;
+          duration = 0.03;
+          volume = 0.25;
+          break;
+        case 'triplet':
+          frequency = beatIndex === 0 ? 1100 : 750;
+          duration = 0.08;
+          break;
+        case 'syncopated':
+        case 'syncopated16':
+          frequency = beatIndex % 2 === 0 ? 1300 : 950;
+          duration = 0.06;
+          break;
+        case 'funk':
+        case 'funkGroove':
+          frequency = beatIndex === 0 ? 1500 : (beatIndex % 2 === 0 ? 1100 : 850);
+          duration = 0.04;
+          volume = beatIndex === 0 ? 0.4 : 0.2;
+          break;
+        case 'ghost':
+          frequency = beatIndex === 0 ? 1000 : 600;
+          duration = 0.02;
+          volume = beatIndex === 0 ? 0.3 : 0.1;
+          break;
+        case 'slap':
+          frequency = beatIndex === 0 ? 1800 : 1200;
+          duration = 0.03;
+          volume = 0.35;
+          break;
+        case 'dotted':
+          frequency = beatIndex === 0 ? 1250 : 850;
+          duration = beatIndex % 2 === 0 ? 0.12 : 0.04;
+          break;
+        case 'accented':
+          frequency = beatIndex === 0 ? 1400 : 900;
+          volume = beatIndex % 2 === 0 ? 0.4 : 0.2;
+          break;
+        default:
+          frequency = beatIndex === 0 ? 1200 : 800;
+      }
+      
       oscillator.frequency.value = frequency;
-
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+      gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
 
       oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.1);
+      oscillator.stop(audioContext.currentTime + duration);
     }
   };
 
