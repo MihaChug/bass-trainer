@@ -572,3 +572,127 @@ footer {
     font-size: 2rem;
   }
 }
+
+/* Стили для расширенного метронома */
+.metronome-settings {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.setting-group label {
+  font-size: 0.9rem;
+  color: var(--secondary-color);
+}
+
+.setting-group select {
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: 1px solid var(--primary-color);
+  background: var(--dark-bg);
+  color: var(--text-light);
+  font-size: 1rem;
+  min-width: 200px;
+}
+
+.rhythm-pattern-display {
+  text-align: center;
+  padding: 10px;
+  background: rgba(108, 92, 231, 0.2);
+  border-radius: 5px;
+  margin-top: 15px;
+  color: var(--secondary-color);
+}
+
+/* Стили для упражнения с визуализацией */
+.exercise-playback-section {
+  margin-top: 20px;
+  padding: 20px;
+  background: rgba(108, 92, 231, 0.1);
+  border-radius: 10px;
+  border: 1px solid var(--primary-color);
+}
+
+.exercise-playback-section h3 {
+  color: var(--accent-color);
+  margin-bottom: 15px;
+}
+
+.tempo-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.bpm-input {
+  width: 60px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid var(--primary-color);
+  background: var(--dark-bg);
+  color: var(--text-light);
+  text-align: center;
+  font-size: 1rem;
+}
+
+.accent-visualization {
+  margin: 20px 0;
+}
+
+.accent-visualization p {
+  color: var(--secondary-color);
+  margin-bottom: 10px;
+}
+
+.accent-container {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.accent-indicator {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  transition: all 0.1s ease;
+}
+
+.accent-indicator.active {
+  transform: scale(1.3);
+  box-shadow: 0 0 15px var(--accent-color);
+}
+
+.accent-indicator.accented {
+  background: var(--accent-color);
+}
+
+.pattern-labels {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.pattern-labels span {
+  font-size: 0.85rem;
+  color: var(--secondary-color);
+  min-width: 20px;
+  text-align: center;
+}
+
+.exercise-pattern {
+  font-size: 0.85rem;
+  color: var(--secondary-color);
+  margin-top: 5px;
+  font-style: italic;
+}
