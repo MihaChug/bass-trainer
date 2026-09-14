@@ -1,0 +1,11 @@
+# Examples 1 and 2 demonstrate that only build artifacts, dependencies, and temp files should be ignored
+# The input contains only a single HTML file which is source code
+# No build artifacts, dependencies, or temp files are present in the changes
+
+# Since only source files are present and no artifacts that should be ignored, the .gitignore remains empty
+
+# No output needed as per rule 6node_modules/
+.next/
+dist/
+build/
+*.log
