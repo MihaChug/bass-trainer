@@ -1,11 +1,40 @@
-# Examples 1 and 2 demonstrate that only build artifacts, dependencies, and temp files should be ignored
-# The input contains only a single HTML file which is source code
-# No build artifacts, dependencies, or temp files are present in the changes
+```
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
 
-# Since only source files are present and no artifacts that should be ignored, the .gitignore remains empty
+# Dependencies
+venv/
+.venv/
+.env
+.env.local
+*.env.*
 
-# No output needed as per rule 6node_modules/
-.next/
+# Build artifacts
 dist/
 build/
+target/
+
+# Logs
 *.log
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+
+# Coverage
+.coverage
+coverage/
+htmlcov/
+
+# MyPy
+.mypy_cache/
+
+# PyTest
+.pytest_cache/
+```
