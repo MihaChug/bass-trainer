@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import './App.css';
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // Типы ритмов для метронома
 const rhythmTypes = [
@@ -15,10 +15,10 @@ const rhythmTypes = [
 
 // Типы звуков для метронома
 const soundTypes = [
-  { id: 'classic', name: 'Классический' },
-  { id: 'electronic', name: 'Электронный' },
-  { id: 'wood', name: 'Дерево' },
-  { id: 'highhat', name: 'Хай-хэт' },
+  { id: 'classic', name: 'Классический', wave: 'sine', freq: 1000 },
+  { id: 'electronic', name: 'Электронный', wave: 'square', freq: 800 },
+  { id: 'wood', name: 'Дерево', wave: 'triangle', freq: 600 },
+  { id: 'highhat', name: 'Хай-хэт', wave: 'square', freq: 2000 },
 ];
 
 // Данные упражнений по этапам с описаниями и типами звуков метронома
@@ -30,7 +30,8 @@ const exercisesData = {
       pattern: "1 2 3 4",
       description: "Базовое упражнение на ровные четвертные ноты. Играйте вниз на каждую долю такта.",
       soundType: "quarter",
-      accentPattern: [1, 0, 0, 0]
+      accentPattern: [1, 0, 0, 0],
+      beatLabels: ['1', '2', '3', '4']
     },
     { 
       name: "Восьмые ноты", 
@@ -38,7 +39,8 @@ const exercisesData = {
       pattern: "1 & 2 & 3 & 4 &",
       description: "Ровные восьмые ноты. Чередуйте удары вниз-вверх, сохраняя равномерность.",
       soundType: "eighth",
-      accentPattern: [1, 0, 1, 0, 1, 0, 1, 0]
+      accentPattern: [1, 0, 1, 0, 1, 0, 1, 0],
+      beatLabels: ['1', '&', '2', '&', '3', '&', '4', '&']
     },
     { 
       name: "Чередование", 
@@ -46,7 +48,8 @@ const exercisesData = {
       pattern: "1 2 & 3 4 &",
       description: "Комбинация четвертных и восьмых нот. Акцент на сильные доли.",
       soundType: "mixed",
-      accentPattern: [1, 0, 1, 0, 1, 0]
+      accentPattern: [1, 0, 1, 0, 1, 0],
+      beatLabels: ['1', '2', '&', '3', '4', '&']
     }
   ],
   2: [
@@ -56,7 +59,8 @@ const exercisesData = {
       pattern: "1 & 2 & 3 & 4 &",
       description: "Акценты на слабых долях (&&). Подчеркивайте синкопированные ноты.",
       soundType: "syncopated",
-      accentPattern: [0, 1, 0, 1, 0, 1, 0, 1]
+      accentPattern: [0, 1, 0, 1, 0, 1, 0, 1],
+      beatLabels: ['1', '&', '2', '&', '3', '&', '4', '&']
     },
     { 
       name: "Смещенный акцент", 
@@ -64,7 +68,8 @@ const exercisesData = {
       pattern: "1 & 2 & 3 & 4 &",
       description: "Упражнение со смещенными акцентами. Играйте громче на указанных долях.",
       soundType: "accented",
-      accentPattern: [1, 0, 0, 1, 0, 1, 0, 0]
+      accentPattern: [1, 0, 0, 1, 0, 1, 0, 0],
+      beatLabels: ['1', '&', '2', '&', '3', '&', '4', '&']
     },
     { 
       name: "Базовый фанк", 
@@ -72,7 +77,8 @@ const exercisesData = {
       pattern: "1 & 2 & 3 & 4 &",
       description: "Основы фанкового ритма. Добавьте ghost notes между основными нотами.",
       soundType: "funk",
-      accentPattern: [1, 0, 0, 1, 0, 0, 1, 0]
+      accentPattern: [1, 0, 0, 1, 0, 0, 1, 0],
+      beatLabels: ['1', '&', '2', '&', '3', '&', '4', '&']
     }
   ],
   3: [
@@ -82,7 +88,8 @@ const exercisesData = {
       pattern: "1 e & a 2 e & a",
       description: "Ровные шестнадцатые ноты. Требует высокой точности и контроля.",
       soundType: "sixteenth",
-      accentPattern: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]
+      accentPattern: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+      beatLabels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a']
     },
     { 
       name: "Пропуск долей", 
@@ -90,7 +97,8 @@ const exercisesData = {
       pattern: "1 e & a 2 e & a",
       description: "Упражнение с пропусками некоторых долей. Развивает внутреннее чувство ритма.",
       soundType: "skip",
-      accentPattern: [1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0]
+      accentPattern: [1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0],
+      beatLabels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a']
     },
     { 
       name: "Синкопированные 16-е", 
@@ -98,7 +106,8 @@ const exercisesData = {
       pattern: "1 e & a 2 e & a",
       description: "Синкопированный ритм в шестнадцатых. Сложное упражнение для продвинутых.",
       soundType: "syncopated16",
-      accentPattern: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
+      accentPattern: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+      beatLabels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a']
     }
   ],
   4: [
@@ -108,7 +117,8 @@ const exercisesData = {
       pattern: "1 trip let 2 trip let",
       description: "Ритмический рисунок триолями. Три ноты на одну долю.",
       soundType: "triplet",
-      accentPattern: [1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0]
+      accentPattern: [1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
+      beatLabels: ['1', 'trip', 'let', '2', 'trip', 'let']
     },
     { 
       name: "Пунктирный ритм", 
@@ -116,7 +126,8 @@ const exercisesData = {
       pattern: "1 & 2 & 3 & 4 &",
       description: "Длинная-короткая ноты. Характерно для многих музыкальных стилей.",
       soundType: "dotted",
-      accentPattern: [1, 0, 0, 1, 1, 0, 0, 1]
+      accentPattern: [1, 0, 0, 1, 1, 0, 0, 1],
+      beatLabels: ['1', '&', '2', '&', '3', '&', '4', '&']
     },
     { 
       name: "Комбинированный", 
@@ -124,7 +135,8 @@ const exercisesData = {
       pattern: "1 e & a 2 e & a",
       description: "Сочетание различных ритмических рисунков. Проверка всех навыков.",
       soundType: "combined",
-      accentPattern: [1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1]
+      accentPattern: [1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1],
+      beatLabels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a']
     }
   ],
   5: [
@@ -134,7 +146,8 @@ const exercisesData = {
       pattern: "1 e & a 2 e & a",
       description: "Тихие приглушенные ноты между основными. Основа фанкового грува.",
       soundType: "ghost",
-      accentPattern: [1, 0.3, 1, 0.3, 1, 0.3, 1, 0.3, 1, 0.3, 1, 0.3, 1, 0.3, 1, 0.3]
+      accentPattern: [1, 0.3, 1, 0.3, 1, 0.3, 1, 0.3, 1, 0.3, 1, 0.3, 1, 0.3, 1, 0.3],
+      beatLabels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a']
     },
     { 
       name: "Slap основа", 
@@ -142,7 +155,8 @@ const exercisesData = {
       pattern: "1 & 2 & 3 & 4 &",
       description: "Базовая техника slap - thumb и pop. Координация обеих рук.",
       soundType: "slap",
-      accentPattern: [1, 0, 0.5, 0, 1, 0, 0.5, 0]
+      accentPattern: [1, 0, 0.5, 0, 1, 0, 0.5, 0],
+      beatLabels: ['1', '&', '2', '&', '3', '&', '4', '&']
     },
     { 
       name: "Фанковый грув", 
@@ -150,7 +164,8 @@ const exercisesData = {
       pattern: "1 e & a 2 e & a",
       description: "Полноценный фанковый рисунок с ghost notes и акцентами.",
       soundType: "funkGroove",
-      accentPattern: [1, 0.5, 0, 0.3, 1, 0, 0.5, 0, 1, 0.5, 0, 0.3, 1, 0, 0.5, 0]
+      accentPattern: [1, 0.5, 0, 0.3, 1, 0, 0.5, 0, 1, 0.5, 0, 0.3, 1, 0, 0.5, 0],
+      beatLabels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a']
     }
   ],
   6: [
@@ -160,7 +175,8 @@ const exercisesData = {
       pattern: "various",
       description: "Импровизируйте поверх ритма, экспериментируйте с различными рисунками.",
       soundType: "free",
-      accentPattern: [1, 0, 0, 0]
+      accentPattern: [1, 0, 0, 0],
+      beatLabels: ['1', '2', '3', '4']
     },
     { 
       name: "Игра поверх бита", 
@@ -168,7 +184,8 @@ const exercisesData = {
       pattern: "various",
       description: "Развитие чувства времени. Играйте с небольшим опережением или отставанием.",
       soundType: "overbeat",
-      accentPattern: [1, 0, 0, 0]
+      accentPattern: [1, 0, 0, 0],
+      beatLabels: ['1', '2', '3', '4']
     },
     { 
       name: "Полиритмия", 
@@ -176,7 +193,8 @@ const exercisesData = {
       pattern: "complex",
       description: "Одновременное использование разных метрических рисунков. Высший пилотаж.",
       soundType: "polyrhythm",
-      accentPattern: [1, 0, 1, 0, 1, 0]
+      accentPattern: [1, 0, 1, 0, 1, 0],
+      beatLabels: ['1', '2', '3', '4', '5', '6']
     }
   ]
 };
