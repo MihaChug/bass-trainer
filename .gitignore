@@ -1,52 +1,18 @@
 ```
-# Build artifacts
-dist/
-build/
-
-# Dependencies
-node_modules/
-
-# Environment
-.env
-.env.local
-*.env.*
-
-# Editors
-.vscode/
-.idea/
-
-# Logs and temp files
-*.log
-*.tmp
-*.swp
-
 # Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# Compiled
-*.o
-*.obj
-*.exe
-*.dll
-*.so
-*.a
-*.out
+# Build artifacts
+backend/frontend_build/
+frontend/dist/
 
-# OS
-.DS_Store
-Thumbs.db
+# Docker
+Dockerfile
+docker-compose.yml
 
-# Coverage
-coverage/
-htmlcov/
-.coverage
-
-# Cache
-.mypy_cache/
-.pytest_cache/
-.gradle/
-target/
+# Logs
+*.log
 ```
