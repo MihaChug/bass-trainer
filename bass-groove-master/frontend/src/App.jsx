@@ -5,12 +5,12 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // Типы ритмов для метронома
 const rhythmTypes = [
-  { id: 'quarter', name: 'Четвертные', pattern: '1 2 3 4', beatsPerBar: 4, labels: ['1', '2', '3', '4'] },
-  { id: 'eighth', name: 'Восьмые', pattern: '1 & 2 & 3 & 4 &', beatsPerBar: 8, labels: ['1', '&', '2', '&', '3', '&', '4', '&'] },
-  { id: 'sixteenth', name: 'Шестнадцатые', pattern: '1 e & a 2 e & a', beatsPerBar: 16, labels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a'] },
-  { id: 'triplet', name: 'Триоли', pattern: '1 trip let 2 trip let', beatsPerBar: 6, labels: ['1', 'trip', 'let', '2', 'trip', 'let'] },
+  { id: 'quarter', name: 'Четвертные', pattern: '1 2 3 4', beatsPerBar: 4, labels: ['1', '2', '3', '4'], accents: [1, 0, 0, 0] },
+  { id: 'eighth', name: 'Восьмые', pattern: '1 & 2 & 3 & 4 &', beatsPerBar: 8, labels: ['1', '&', '2', '&', '3', '&', '4', '&'], accents: [1, 0, 1, 0, 1, 0, 1, 0] },
+  { id: 'sixteenth', name: 'Шестнадцатые', pattern: '1 e & a 2 e & a', beatsPerBar: 16, labels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a'], accents: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0] },
+  { id: 'triplet', name: 'Триоли', pattern: '1 trip let 2 trip let', beatsPerBar: 6, labels: ['1', 'trip', 'let', '2', 'trip', 'let'], accents: [1, 0, 0, 1, 0, 0] },
   { id: 'syncopated', name: 'Синкопа', pattern: '1 & 2 & 3 & 4 &', beatsPerBar: 8, labels: ['1', '&', '2', '&', '3', '&', '4', '&'], accents: [0, 1, 0, 1, 0, 1, 0, 1] },
-  { id: 'funk', name: 'Фанк', pattern: '1 e & a 2 e & a', beatsPerBar: 16, labels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a'], accents: [1, 0, 1, 0, 0, 1, 0, 0] },
+  { id: 'funk', name: 'Фанк', pattern: '1 e & a 2 e & a', beatsPerBar: 16, labels: ['1', 'e', '&', 'a', '2', 'e', '&', 'a'], accents: [1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0] },
 ];
 
 // Типы звуков для метронома
@@ -460,7 +460,18 @@ function App() {
     
     const waveType = selectedSound.wave || 'sine';
     const baseFreq = selectedSound.freq || 1000;
-    const isFirstBeat = beatIndex % selectedRhythm.beatsPerBar === 0;
+    
+    // Определяем акценты на основе выбранного ритма
+    let isAccent = false;
+    const beatInBar = beatIndex % selectedRhythm.beatsPerBar;
+    
+    // Проверяем, является ли доля акцентной
+    if (selectedRhythm.accents) {
+      isAccent = selectedRhythm.accents[beatInBar] === 1;
+    } else {
+      // Если accents не указан, считаем акцентной только первую долю
+      isAccent = beatInBar === 0;
+    }
     
     setMetronomeBeat(beatIndex);
     
@@ -470,9 +481,10 @@ function App() {
     oscillator.connect(gainNode);
     gainNode.connect(ctx.destination);
     
-    const frequency = isFirstBeat ? baseFreq + 200 : baseFreq;
+    // Частота и громкость зависят от акцента
+    const frequency = isAccent ? baseFreq + 300 : baseFreq;
     const duration = 0.1;
-    const volume = isFirstBeat ? 0.4 : 0.2;
+    const volume = isAccent ? 0.5 : 0.25;
     
     oscillator.type = waveType;
     oscillator.frequency.value = frequency;
@@ -624,7 +636,7 @@ function App() {
         <h4>Визуализация ритма:</h4>
         <div className="beat-dots-container">
           {beatLabels.map((label, index) => {
-            const isAccent = accentPattern[index] === 1 || accentPattern[index] > 0.5;
+            const isAccent = accentPattern && (accentPattern[index] === 1 || accentPattern[index] > 0.5);
             const isActive = exerciseBeat % beatLabels.length === index;
             
             return (
@@ -634,7 +646,8 @@ function App() {
                   style={{
                     transform: isActive ? 'scale(1.3)' : 'scale(1)',
                     backgroundColor: isAccent ? '#ff6b6b' : '#4ecdc4',
-                    boxShadow: isActive ? '0 0 15px rgba(255,107,107,0.8)' : 'none'
+                    boxShadow: isActive ? `0 0 15px ${isAccent ? 'rgba(255,107,107,0.8)' : 'rgba(78,205,196,0.8)'}` : 'none',
+                    border: isAccent && !isActive ? '2px solid #ff6b6b' : 'none'
                   }}
                 />
                 <span className="beat-label">{label}</span>
@@ -648,7 +661,7 @@ function App() {
 
   // Рендер визуализации для метронома
   const renderMetronomeVisualization = () => {
-    const { beatsPerBar, labels } = selectedRhythm;
+    const { beatsPerBar, labels, accents } = selectedRhythm;
     
     return (
       <div className="visualization-container">
@@ -656,15 +669,17 @@ function App() {
         <div className="beat-dots-container">
           {labels.map((label, index) => {
             const isActive = metronomeBeat % beatsPerBar === index;
+            const isAccent = accents && accents[index] === 1;
             
             return (
               <div key={index} className="beat-dot-wrapper">
                 <div 
-                  className={`beat-dot ${isActive ? 'active' : ''}`}
+                  className={`beat-dot ${isActive ? 'active' : ''} ${isAccent ? 'accent' : ''}`}
                   style={{
                     transform: isActive ? 'scale(1.3)' : 'scale(1)',
-                    backgroundColor: index === 0 ? '#ff6b6b' : '#4ecdc4',
-                    boxShadow: isActive ? '0 0 15px rgba(78,205,196,0.8)' : 'none'
+                    backgroundColor: isAccent ? '#ff6b6b' : '#4ecdc4',
+                    boxShadow: isActive ? `0 0 15px ${isAccent ? 'rgba(255,107,107,0.8)' : 'rgba(78,205,196,0.8)'}` : 'none',
+                    border: isAccent && !isActive ? '2px solid #ff6b6b' : 'none'
                   }}
                 />
                 <span className="beat-label">{label}</span>
