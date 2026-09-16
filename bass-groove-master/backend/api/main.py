@@ -1,11 +1,14 @@
 """
 FastAPI Backend for Bass Groove Master
 
-Provides REST API endpoints for audio analysis with hardware acceleration.
+Provides REST API endpoints for audio analysis with hardware acceleration
+and serves the React frontend.
 """
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import List, Optional
 import logging
@@ -13,7 +16,8 @@ import sys
 import os
 
 # Add backend to path for imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, backend_dir)
 
 from audio_processing import (
     process_audio_buffer,
@@ -32,19 +36,50 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS middleware for frontend communication
+# CORS middleware for frontend communication (also allows same-origin)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
         "http://localhost:8080",
         "http://127.0.0.1:3000",
-        "http://127.0.0.1:8080"
+        "http://127.0.0.1:8080",
+        "*"  # Allow all origins for containerized deployment
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Path to frontend build
+frontend_dist_path = os.path.join(backend_dir, "frontend_build")
+
+# Serve static files from frontend build if it exists
+if os.path.exists(frontend_dist_path):
+    app.mount("/assets", StaticFiles(directory=os.path.join(frontend_dist_path, "assets")), name="assets")
+else:
+    logger.warning(f"Frontend build not found at {frontend_dist_path}")
+
+
+@app.get("/")
+async def serve_frontend():
+    """Serve the React frontend."""
+    index_path = os.path.join(frontend_dist_path, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    return {"message": "Frontend not built. Run 'npm run build' in frontend directory."}
+
+
+@app.get("/health", response_model=dict)
+async def health_check():
+    """Health check endpoint."""
+    return {
+        "status": "healthy",
+        "acceleration": {
+            "cuda": is_cuda_available(),
+            "mps": is_mps_available()
+        }
+    }
 
 
 class AnalysisResponse(BaseModel):
