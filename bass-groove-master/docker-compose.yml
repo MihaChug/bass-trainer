@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  bass-groove-master:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./recordings:/app/backend/recordings
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    # Uncomment for GPU support (NVIDIA)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
