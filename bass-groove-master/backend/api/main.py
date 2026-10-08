@@ -15,7 +15,6 @@ import logging
 import sys
 import os
 
-# Add backend to path for imports
 backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, backend_dir)
 
@@ -26,7 +25,6 @@ from audio_processing import (
     is_mps_available
 )
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -36,54 +34,31 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS middleware for frontend communication (also allows same-origin)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:8080",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:8080",
-        "*"  # Allow all origins for containerized deployment
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Path to frontend build
 frontend_dist_path = os.path.join(backend_dir, "frontend_build")
 
-# Serve static files from frontend build if it exists
 if os.path.exists(frontend_dist_path):
     app.mount("/assets", StaticFiles(directory=os.path.join(frontend_dist_path, "assets")), name="assets")
-else:
-    logger.warning(f"Frontend build not found at {frontend_dist_path}")
-
 
 @app.get("/")
 async def serve_frontend():
-    """Serve the React frontend."""
     index_path = os.path.join(frontend_dist_path, "index.html")
     if os.path.exists(index_path):
         return FileResponse(index_path)
-    return {"message": "Frontend not built. Run 'npm run build' in frontend directory."}
+    return {"message": "Frontend not built."}
 
-
-@app.get("/health", response_model=dict)
+@app.get("/health")
 async def health_check():
-    """Health check endpoint."""
-    return {
-        "status": "healthy",
-        "acceleration": {
-            "cuda": is_cuda_available(),
-            "mps": is_mps_available()
-        }
-    }
-
+    return {"status": "healthy", "cuda": is_cuda_available(), "mps": is_mps_available()}
 
 class AnalysisResponse(BaseModel):
-    """Response model for audio analysis."""
     rhythm_accuracy: float
     tempo_stability: float
     attack_clarity: float
@@ -93,9 +68,7 @@ class AnalysisResponse(BaseModel):
     sample_rate: int
     device_used: str
 
-
 class DeviceInfoResponse(BaseModel):
-    """Response model for device information."""
     cuda_available: bool
     mps_available: bool
     device_type: str
@@ -103,162 +76,40 @@ class DeviceInfoResponse(BaseModel):
     memory_total: Optional[float] = None
     memory_allocated: Optional[float] = None
 
-
 class FeedbackTip(BaseModel):
-    """Feedback tip model."""
     message: str
     category: str
 
-
 class DetailedAnalysisResponse(BaseModel):
-    """Detailed analysis response with feedback."""
     analysis: AnalysisResponse
     feedback: List[FeedbackTip]
 
-
-@app.get("/")
-async def root():
-    """Root endpoint."""
-    return {
-        "message": "Bass Groove Master API",
-        "version": "1.0.0",
-        "status": "running"
-    }
-
-
-@app.get("/health", response_model=dict)
-async def health_check():
-    """Health check endpoint."""
-    return {
-        "status": "healthy",
-        "acceleration": {
-            "cuda": is_cuda_available(),
-            "mps": is_mps_available()
-        }
-    }
-
-
 @app.get("/device/info", response_model=DeviceInfoResponse)
 async def get_accelerator_info():
-    """Get information about available hardware accelerators."""
-    info = get_device_info()
-    logger.info(f"Device info requested: {info['device_type']}")
-    return info
-
+    return get_device_info()
 
 @app.post("/analyze/audio", response_model=DetailedAnalysisResponse)
 async def analyze_audio(file: UploadFile = File(...)):
-    """
-    Analyze uploaded audio file and return detailed metrics.
-    
-    The analysis uses hardware acceleration (CUDA/MPS) when available.
-    """
     try:
-        # Read file content
         content = await file.read()
-        
         if not content:
-            raise HTTPException(status_code=400, detail="Empty file uploaded")
-        
-        # Process audio
-        logger.info(f"Processing audio file: {file.filename}")
+            raise HTTPException(status_code=400, detail="Empty file")
         results = process_audio_buffer(content)
-        
-        # Generate feedback
-        feedback = generate_feedback(results)
-        
-        response = DetailedAnalysisResponse(
-            analysis=AnalysisResponse(
-                rhythm_accuracy=results['rhythm_accuracy'],
-                tempo_stability=results['tempo_stability'],
-                attack_clarity=results['attack_clarity'],
-                dynamics=results['dynamics'],
-                overall_score=results['overall_score'],
-                duration=results['duration'],
-                sample_rate=results['sample_rate'],
-                device_used=results['device_used']
-            ),
+        feedback = []
+        if results['rhythm_accuracy'] < 70:
+            feedback.append(FeedbackTip(message="Работайте над ритмом с метрономом.", category="rhythm"))
+        elif results['rhythm_accuracy'] >= 85:
+            feedback.append(FeedbackTip(message="Отличный ритм!", category="rhythm"))
+        if results['tempo_stability'] < 70:
+            feedback.append(FeedbackTip(message="Темп плавает.", category="tempo"))
+        if results['overall_score'] >= 85:
+            feedback.append(FeedbackTip(message="Превосходно!", category="overall"))
+        return DetailedAnalysisResponse(
+            analysis=AnalysisResponse(**results),
             feedback=feedback
         )
-        
-        logger.info(f"Analysis complete - Overall score: {results['overall_score']:.1f}%")
-        return response
-        
     except Exception as e:
-        logger.error(f"Error processing audio: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
-
-
-def generate_feedback(results: dict) -> List[FeedbackTip]:
-    """Generate personalized feedback based on analysis results."""
-    feedback = []
-    
-    # Rhythm feedback
-    if results['rhythm_accuracy'] < 70:
-        feedback.append(FeedbackTip(
-            message="Поработайте над чувством ритма. Используйте метроном на медленных темпах.",
-            category="rhythm"
-        ))
-    elif results['rhythm_accuracy'] >= 85:
-        feedback.append(FeedbackTip(
-            message="Отличная ритмическая точность! Попробуйте более сложные синкопы.",
-            category="rhythm"
-        ))
-    
-    # Tempo feedback
-    if results['tempo_stability'] < 70:
-        feedback.append(FeedbackTip(
-            message="Темп плавает. Практикуйте длинные сессии с метрономом.",
-            category="tempo"
-        ))
-    elif results['tempo_stability'] >= 85:
-        feedback.append(FeedbackTip(
-            message="Стабильный темп! Можете экспериментировать с rubato.",
-            category="tempo"
-        ))
-    
-    # Attack feedback
-    if results['attack_clarity'] < 65:
-        feedback.append(FeedbackTip(
-            message="Обратите внимание на четкость атаки. Каждая нота должна звучать ясно.",
-            category="attack"
-        ))
-    elif results['attack_clarity'] >= 80:
-        feedback.append(FeedbackTip(
-            message="Четкая атака! Хорошая техника звукоизвлечения.",
-            category="attack"
-        ))
-    
-    # Dynamics feedback
-    if results['dynamics'] < 65:
-        feedback.append(FeedbackTip(
-            message="Добавьте динамики в игру. Контраст между громкими и тихими нотами создает грув.",
-            category="dynamics"
-        ))
-    elif results['dynamics'] >= 80:
-        feedback.append(FeedbackTip(
-            message="Отличная динамика! Вы чувствуете музыку.",
-            category="dynamics"
-        ))
-    
-    # Overall feedback
-    if results['overall_score'] >= 85:
-        feedback.append(FeedbackTip(
-            message="Превосходно! Вы готовы к следующему уровню сложности.",
-            category="overall"
-        ))
-    elif results['overall_score'] >= 70:
-        feedback.append(FeedbackTip(
-            message="Хороший результат! Продолжайте регулярные тренировки.",
-            category="overall"
-        ))
-    else:
-        feedback.append(FeedbackTip(
-            message="Не сдавайтесь! Регулярная практика принесет результаты.",
-            category="overall"
-        ))
-    
-    return feedback
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 if __name__ == "__main__":
